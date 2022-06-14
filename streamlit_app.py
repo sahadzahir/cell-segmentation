@@ -1,12 +1,9 @@
-from distutils.command.upload import upload
 import streamlit as st
 import tensorflow as tf
 import numpy as np
-from PIL import Image
 from skimage.io import imread, imshow
 from skimage.transform import resize
 import matplotlib.pyplot as plt
-import os
 
 st.set_option('deprecation.showfileUploaderEncoding', False)
 
