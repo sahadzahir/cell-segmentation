@@ -4,28 +4,19 @@ import numpy as np
 from skimage.io import imread, imshow
 from skimage.transform import resize
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 st.set_option('deprecation.showfileUploaderEncoding', False)
 
 @st.cache(allow_output_mutation=True)
-def load_model():
-	model = tf.keras.models.load_model('keras.h5')
-	return model
-
-
-def predict_class(image, model):
-
-	image = tf.cast(image, tf.float32)
-	image = tf.image.resize(image, [180, 180])
-
-	image = np.expand_dims(image, axis = 0)
-
-	prediction = model.predict(image)
-
-	return prediction
+def load_model(model_name='LinkNet_Resnet34'):
+    model_name = 'models/' + str(model_name) + '.h5'
+    model = tf.keras.models.load_model(model_name)
+    return model
 
 def format_image(image):
-    image= resize(image, (256, 256,1), mode = 'constant', preserve_range = True)
+    image = resize(image, (512, 512,3), mode = 'constant', preserve_range = True)
+    image = image/255
     image_shape = np.shape(image)
     image_formatted = np.zeros((1,image_shape[0],image_shape[1],image_shape[2]))
     image_formatted[0,:,:,:] = image
@@ -39,15 +30,27 @@ def predict_image(image, model):
     output =pred_argmax[0,:,:]
     return output
 
-# print(np.shape(sample_image_formatted))
 
+# Add a selectbox to the sidebar:
+select_model = st.sidebar.selectbox(
+    'Which model would you like to try?',
+    ('LinkNet_Resnet34', 'U-Net_Resnet34', 'U-Net_vgg19', 'U-Net_Mobilenet',
+    'U-Net_Inceptionv3', 'U-Net_Densenet121')
+)
 
+select_image = st.sidebar.selectbox(
+    'Choose an Image.',
+    (None, 'train_6.png', 'train_7.png', 'train_8.png', 'train_9.png')
+)
+if (select_image is not None):
+    select_image = 'images/' + select_image 
 
-model = load_model()
+model = load_model(select_model)
 st.title('Cell Segmentation Tool')
 
-file = st.file_uploader("Upload an image of cells", type=["jpg", "png"])
-
+# File Uploader toolbar for uploading images
+file = st.file_uploader("Upload an image of cells. Don't have an image? Choose a sample from the sidebar.", type=["jpg", "png"])
+file = select_image
 
 if file is None:
 	st.text('Waiting for upload....')
@@ -56,34 +59,28 @@ else:
     slot = st.empty()
     slot.text('Running inference....')
 
-    #uploaded_image = Image.open(file).convert('L')
-    #print(np.shape(uploaded_image))
-    #uploaded_image = uploaded_image[..., np.newaxis]
-    uploaded_image = imread(file,as_gray=True)
-    #st.image(uploaded_image, caption="Input Image", width = 400)
+    # Read uploaded image or selected imge from file object
+    uploaded_image = imread(file)
+
+    # Plot uploaded/selected image
     fig, ax = plt.subplots()
     ax.title.set_text('Uploaded Image')
     ax.imshow(uploaded_image, cmap='gray')
     st.pyplot(fig)
 
-
+    # Format input image for model inferencing
     formatted_image = format_image(uploaded_image)
-    print(np.shape(formatted_image))
+
+    # Obtain output image from model
     output_image = predict_image(formatted_image, model)
+
+    # Plot output image
     fig2, ax2 = plt.subplots()
     ax2.title.set_text('Output Image')
-    ax2.imshow(output_image, cmap='jet')
-    # plt.figure(figsize=(8, 8))
-    # plt.subplot(221)
-    # plt.title('Testing Image')
-    # plt.imshow(uploaded_image, cmap='gray')
-    # plt.subplot(222)
-    # plt.title('Prediction on test image')
-    # plt.imshow(output_image)
-    # plt.savefig('x',dpi=400)
-    #st.image('x.png',caption="Segtmented Image")
-
-    #st.image(output_image, caption="Segmented Image")
+    divider2 = make_axes_locatable(ax2)
+    cax2 = divider2.append_axes('bottom', size='5%', pad=0.05)
+    im2 = ax2.imshow(output_image, cmap='jet',vmin=0, vmax=7)
+    fig2.colorbar(im2, cax = cax2, orientation='horizontal')
     st.pyplot(fig2)
-    slot.text('Done')
-    #st.success(output)
+
+    slot.text('Completed Inference!')
