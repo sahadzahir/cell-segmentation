@@ -35,8 +35,7 @@ def predict_image(image, model):
 # Add a selectbox to the sidebar:
 select_model = st.sidebar.selectbox(
     'Which model would you like to try?',
-    ('LinkNet_Resnet34', 'U-Net_Resnet34', 'U-Net_vgg19', 'U-Net_Mobilenet',
-    'U-Net_Inceptionv3', 'U-Net_Densenet121')
+    ('U-Net_Resnet34', 'U-Net_Inceptionv3', 'U-Net_Densenet121')
 )
 
 select_image = st.sidebar.selectbox(
