@@ -4,3 +4,4 @@ numpy==1.22.3
 scikit-image==0.19.2
 matplotlib==3.5.1
 click==8 
+segmentation-models==1.0.1
