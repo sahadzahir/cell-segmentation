@@ -8,6 +8,7 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 st.set_option('deprecation.showfileUploaderEncoding', False)
 
+
 @st.cache(allow_output_mutation=True)
 def load_model(model_name='LinkNet_Resnet34'):
     model_name = 'models/' + str(model_name) + '.h5'
@@ -50,6 +51,7 @@ st.title('Cell Segmentation Tool')
 
 # File Uploader toolbar for uploading images
 file = st.file_uploader("Upload an image of cells. Don't have an image? Choose a sample from the sidebar.", type=["jpg", "png"])
+
 file = select_image
 
 if file is None:
