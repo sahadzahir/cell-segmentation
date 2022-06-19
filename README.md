@@ -1,4 +1,4 @@
-# Streamlit Demo: Deep Dream
+# Cell Segmentation Tool: Streamlit
 
 A [Streamlit](https://streamlit.io) app that performs cell segmentation on cell images. 
 
