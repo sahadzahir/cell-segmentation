@@ -23,8 +23,8 @@ if 'uploaded_image' not in st.session_state:
 	st.session_state.uploaded_image = None
 
 @st.cache(allow_output_mutation=True)
-def load_model(model_name='U-Net_Resnet34'):
-    if (model_name == 'binary'):
+def load_model(model_name='U-Net_Densenet121'):
+    if (model_name == 'U-Net_Vgg16'):
         model_name = 'models/' + str(model_name) + '.h5'
         model = tf.keras.models.load_model(model_name, custom_objects={'binary_crossentropy_plus_jaccard_loss': 
         sm.losses.bce_jaccard_loss,'iou_score':sm.metrics.IOUScore})
